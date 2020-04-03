@@ -82,13 +82,13 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
           // here we just assume they are
           String projectValue = projectRequested.get(0).split(":")[1];
           log.warn(">>>>>>>>>>>>> projectValue " + projectValue);
-          UserModel user = userSession.getUser();
-          String attributeName = mappingModel.getConfig().get(ProtocolMapperUtils.USER_ATTRIBUTE);
-          boolean aggregateAttrs = Boolean.valueOf(mappingModel.getConfig().get(ProtocolMapperUtils.AGGREGATE_ATTRS));
-          Collection<String> attributeValue = KeycloakModelUtils.resolveAttribute(user, attributeName, aggregateAttrs);
-          if (attributeValue == null) return;
-
-          OIDCAttributeMapperHelper.mapClaim(token, mappingModel, projectValue);
+            UserModel user = userSession.getUser();
+            String attributeName = (String)mappingModel.getConfig().get("user.attribute");
+            List<String> attributeValue = KeycloakModelUtils.resolveAttribute(user, attributeName);
+            if (attributeValue != null) {
+                OIDCAttributeMapperHelper.mapClaim(token, mappingModel, projectValue);
+            }
+            
         }
 
 //        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");

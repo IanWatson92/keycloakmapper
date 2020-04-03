@@ -14,7 +14,7 @@
         see https://github.com/keycloak/keycloak/blob/master/pom.xml
         -->
         <resteasy.version>3.5.1.Final</resteasy.version>
-        <keycloak.version>7.0.0.redhat-00002</keycloak.version>
+        <keycloak.version>4.5.0.Final</keycloak.version>
         <!-- the version of this build and all depending projects -->
         <revision>1.0.0-SNAPSHOT</revision>
     </properties>
@@ -49,16 +49,16 @@
             <artifactId>keycloak-server-spi</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>
+        <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi-private</artifactId>
             <scope>provided</scope>
-        </dependency>-->
-<!--        <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-services</artifactId>
             <scope>provided</scope>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
@@ -110,11 +110,11 @@
                 <artifactId>keycloak-server-spi</artifactId>
                 <version>${keycloak.version}</version>
             </dependency>
-<!--            <dependency>
+            <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-server-spi-private</artifactId>
                 <version>${keycloak.version}</version>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-services</artifactId>
