@@ -1,5 +1,6 @@
 package io.iw.keycloakmapper;
 
+import org.keycloak.OAuth2Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.UserSessionModel;
@@ -14,6 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jboss.logging.Logger;
 import java.util.List;
+import java.util.Arrays;
+import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.protocol.ProtocolMapperUtils;
+import org.keycloak.models.UserModel;
+import java.util.Collection;
 
 public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
@@ -58,7 +64,34 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
         log.warn(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
-        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
+        String scopes = userSession.getAuthenticatedClientSessionByClient("7f801643-a755-427f-b91a-e7a4775417c2").getNote(OAuth2Constants.SCOPE);
+        List<String> scopesList = Arrays.asList(scopes.split(" "));
+        log.warn(">>>>>>>>>>>>>>>>>>>>>>> Scopes are " + scopesList.toString());
+        List<String> projectRequested = new ArrayList<>();
+        scopesList.forEach((scope) -> {
+          log.warn(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> scope iterated is " + scope);
+          if (scope.startsWith("project")) {            
+            projectRequested.add(scope);
+          }
+        });
+
+        log.warn("Size of projectRequested is " + projectRequested.size());
+        log.warn("Content is " + projectRequested.toString());
+        if (projectRequested.size() == 1) {
+          // check if user is part of the requested project
+          // here we just assume they are
+          String projectValue = projectRequested.get(0).split(":")[1];
+          log.warn(">>>>>>>>>>>>> projectValue " + projectValue);
+          UserModel user = userSession.getUser();
+          String attributeName = mappingModel.getConfig().get(ProtocolMapperUtils.USER_ATTRIBUTE);
+          boolean aggregateAttrs = Boolean.valueOf(mappingModel.getConfig().get(ProtocolMapperUtils.AGGREGATE_ATTRS));
+          Collection<String> attributeValue = KeycloakModelUtils.resolveAttribute(user, attributeName, aggregateAttrs);
+          if (attributeValue == null) return;
+
+          OIDCAttributeMapperHelper.mapClaim(token, mappingModel, projectValue);
+        }
+
+//        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
     }
 
     @Override
