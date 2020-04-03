@@ -26,6 +26,10 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
         OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, KeycloakMapper.class);
     }
 
+    public KeycloakMapper() {
+      log.warn(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> mapper called!");
+    }
+
     @Override
     public String getDisplayCategory() {
         return "Token mapper";
@@ -53,7 +57,7 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
 
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession) {
-        log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
+        log.warn(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
         OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
     }
 }
