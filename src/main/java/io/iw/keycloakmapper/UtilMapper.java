@@ -13,11 +13,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.protocol.ProtocolMapper;
+import org.keycloak.protocol.oidc.mappers.OIDCAccessTokenMapper;
+import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
+import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
+import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 import org.keycloak.services.ServicesLogger;
+import org.jboss.logging.Logger;
 
 public class UtilMapper {
+
+  protected static Logger log = Logger.getLogger(UtilMapper.class);
+
   public static final String TOKEN_CLAIM_NAME = "claim.name";
   
   public static final String TOKEN_CLAIM_NAME_LABEL = "tokenClaimName.label";
@@ -74,6 +82,8 @@ public class UtilMapper {
       .<T>map(mapper)
       .collect(Collectors.toList());
   }
+
+
   
   private static Object convertToType(String type, Object attributeValue) {
     Boolean booleanObject;
@@ -87,27 +97,27 @@ public class UtilMapper {
         if (booleanObject != null)
           return booleanObject; 
         if (attributeValue instanceof List)
-          return transform((List)attributeValue, OIDCAttributeMapperHelper::getBoolean); 
+          return transform((List)attributeValue, UtilMapper::getBoolean);
         throw new RuntimeException("cannot map type for token claim");
       case "String":
         if (attributeValue instanceof String)
           return attributeValue; 
         if (attributeValue instanceof List)
-          return transform((List)attributeValue, OIDCAttributeMapperHelper::getString); 
+          return transform((List)attributeValue, UtilMapper::getString);
         return attributeValue.toString();
       case "long":
         longObject = getLong(attributeValue);
         if (longObject != null)
           return longObject; 
         if (attributeValue instanceof List)
-          return transform((List)attributeValue, OIDCAttributeMapperHelper::getLong); 
+          return transform((List)attributeValue, UtilMapper::getLong);
         throw new RuntimeException("cannot map type for token claim");
       case "int":
         intObject = getInteger(attributeValue);
         if (intObject != null)
           return intObject; 
         if (attributeValue instanceof List)
-          return transform((List)attributeValue, OIDCAttributeMapperHelper::getInteger); 
+          return transform((List)attributeValue, UtilMapper::getInteger);
         throw new RuntimeException("cannot map type for token claim");
     } 
     return null;
@@ -160,23 +170,29 @@ public class UtilMapper {
   }
   
   public static void mapClaim(IDToken token, ProtocolMapperModel mappingModel, Object attributeValue) {
+    log.warn("Entering mapClaim");
     attributeValue = mapAttributeValue(mappingModel, attributeValue);
+    log.warn("AttributeValue is " + attributeValue);
     if (attributeValue == null)
       return; 
     String protocolClaim = (String)mappingModel.getConfig().get("claim.name");
     if (protocolClaim == null)
-      return; 
+      return;
+    log.warn("Protocol claim is " + protocolClaim);
     List<String> split = splitClaimPath(protocolClaim);
     int length = split.size();
     int i = 0;
     Map<String, Object> jsonObject = token.getOtherClaims();
+    log.warn("json other claim is " + jsonObject);
     for (String component : split) {
       i++;
       if (i == length) {
         jsonObject.put(component, attributeValue);
         continue;
-      } 
+      }
+      log.warn("Before nested, component is " + component);
       Map<String, Object> nested = (Map<String, Object>)jsonObject.get(component);
+      log.warn("After nested");
       if (nested == null) {
         nested = new HashMap<>();
         jsonObject.put(component, nested);

@@ -89,30 +89,4 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
 //        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
     }
 
-    public static void mapClaim(IDToken token, ProtocolMapperModel mappingModel, Object attributeValue) {
-    attributeValue = mapAttributeValue(mappingModel, attributeValue);
-    if (attributeValue == null)
-      return; 
-    String protocolClaim = (String)mappingModel.getConfig().get("claim.name");
-    if (protocolClaim == null)
-      return; 
-    List<String> split = splitClaimPath(protocolClaim);
-    int length = split.size();
-    int i = 0;
-    Map<String, Object> jsonObject = token.getOtherClaims();
-    for (String component : split) {
-      i++;
-      if (i == length) {
-        jsonObject.put(component, attributeValue);
-        continue;
-      } 
-      Map<String, Object> nested = (Map<String, Object>)jsonObject.get(component);
-      if (nested == null) {
-        nested = new HashMap<>();
-        jsonObject.put(component, nested);
-      } 
-      jsonObject = nested;
-    } 
-  }
-
 }
