@@ -84,19 +84,16 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
           log.warn(">>>>>>>>>>>>> projectValue " + projectValue);
             UserModel user = userSession.getUser();
             String attributeName = (String)mappingModel.getConfig().get("user.attribute");
-            List<String> attributeValue = KeycloakModelUtils.resolveAttribute(user, attributeName);
+            boolean aggregateAttrs = Boolean.valueOf((String)mappingModel.getConfig().get("aggregate.attrs"));
+            Collection<String> attributeValue = KeycloakModelUtils.resolveAttribute(user, attributeName, aggregateAttrs);
             if (attributeValue != null) {
                 OIDCAttributeMapperHelper.mapClaim(token, mappingModel, projectValue);
             }
-            
+
         }
 
 //        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
     }
 
-    @Override
-    protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession) {
-        log.warn(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
-        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
-    }
+
 }
