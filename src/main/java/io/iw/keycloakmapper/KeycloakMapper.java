@@ -56,6 +56,12 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
     }
 
     @Override
+    protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
+        log.warn(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
+    }
+
+    @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession) {
         log.warn(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
         OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
