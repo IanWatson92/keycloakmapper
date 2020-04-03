@@ -11,6 +11,14 @@ import org.keycloak.representations.IDToken;
 import java.util.List;
 
 public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper {
+
+    private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
+
+    static {
+        OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
+        OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, KeycloakMapper.class);
+    }
+
     @Override
     public String getDisplayCategory() {
         return "Token mapper";
