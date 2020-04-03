@@ -6,16 +6,20 @@ import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.protocol.oidc.mappers.OIDCAccessTokenMapper;
+import org.keycloak.protocol.oidc.mappers.OIDCIDTokenMapper;
+import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.jboss.logging.Logger;
 import java.util.List;
 
-public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper {
+public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
 
     private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
+
+    protected static Logger log = Logger.getLogger(KeycloakMapper.class);
 
     static {
         OIDCAttributeMapperHelper.addTokenClaimNameConfig(configProperties);
@@ -39,7 +43,7 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return null;
+        return configProperties;
     }
 
     @Override
@@ -49,6 +53,7 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
 
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession, KeycloakSession keycloakSession) {
-        token.getOtherClaims().put("test_claim", "Working!");
+        log.debug(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
     }
 }
