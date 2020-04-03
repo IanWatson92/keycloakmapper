@@ -32,10 +32,6 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
         OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, KeycloakMapper.class);
     }
 
-    public KeycloakMapper() {
-      log.warn(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> mapper called!");
-    }
-
     @Override
     public String getDisplayCategory() {
         return "Token mapper";
@@ -63,30 +59,20 @@ public class KeycloakMapper extends AbstractOIDCProtocolMapper implements OIDCAc
 
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession) {
-        log.warn(">>>>>>>>>>>>>>>>>>>>>>>>> Set Claim invoked!");
         String scopes = userSession.getAuthenticatedClientSessionByClient("7f801643-a755-427f-b91a-e7a4775417c2").getNote(OAuth2Constants.SCOPE);
         List<String> scopesList = Arrays.asList(scopes.split(" "));
-        log.warn(">>>>>>>>>>>>>>>>>>>>>>> Scopes are " + scopesList.toString());
         List<String> projectRequested = new ArrayList<>();
         scopesList.forEach((scope) -> {
-          log.warn(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> scope iterated is " + scope);
           if (scope.startsWith("project")) {            
             projectRequested.add(scope);
           }
         });
 
-        log.warn("Size of projectRequested is " + projectRequested.size());
-        log.warn("Content is " + projectRequested.toString());
         if (projectRequested.size() == 1) {
-          // check if user is part of the requested project
-          // here we just assume they are
+          // check if user is part of the requested project via some means such as an ldap lookup or group check
           String projectValue = projectRequested.get(0).split(":")[1];
-          log.warn(">>>>>>>>>>>>> projectValue " + projectValue);
           OIDCAttributeMapperHelper.mapClaim(token, mappingModel, projectValue);
 
         }
-
-//        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, "hello world");
     }
-
 }
